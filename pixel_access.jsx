@@ -32,11 +32,11 @@ function RawPixels(doc) {
         // Set up the save action.
         // See https://helpx.adobe.com/photoshop/using/file-formats.html#photoshop_raw_format for some info,
         // and more technical at https://www.adobe.com/devnet-apps/photoshop/fileformatashtml/
-        let rawFormat = new ActionDescriptor();
+        var rawFormat = new ActionDescriptor();
         rawFormat.putString(stringIDToTypeID("fileCreator"), "8BIM");
         rawFormat.putBoolean(stringIDToTypeID("channelsInterleaved"), true);
         
-        let saveAction = new ActionDescriptor();
+        var saveAction = new ActionDescriptor();
         saveAction.putObject(stringIDToTypeID("as"), stringIDToTypeID("rawFormat"), rawFormat);
         saveAction.putPath(stringIDToTypeID("in"), file);
         saveAction.putBoolean(stringIDToTypeID("copy"), false);
@@ -79,14 +79,14 @@ RawPixels.prototype.get = function (x, y) {
 }
 
 // Set the pixel at x, y to the values in RGB.
-RawPixels.prototype.set = function (x, y, RGB) {
+RawPixels.prototype.set = function (RGB, x, y) {
     const off = getOffset(x, y);
     // note: note checking that length of p = 3!
     const R = String.fromCharCode(RGB[0]);
     const G = String.fromCharCode(RGB[1]);
     const B = String.fromCharCode(RGB[2]);
 
-    this.pixelData = this.pixelData.substr(0, off) + R + G + B + this.pixelData.substr(off + len);
+    this.pixelData = this.pixelData.substr(0, off) + R + G + B + this.pixelData.substr(off + 3);
 }
 
 // If any changes were made to the pixels, we need to save them to disk and have Photoshop read that file back in.
@@ -102,14 +102,14 @@ RawPixels.prototype.create_layer = function () {
         file.close();
         if (err) { file.remove(); alert(err); return; }
 
-        let rawFormat = new ActionDescriptor();
+        var rawFormat = new ActionDescriptor();
         rawFormat.putInteger(stringIDToTypeID("width"), this.width);
         rawFormat.putInteger(stringIDToTypeID("height"), this.height);
         rawFormat.putInteger(stringIDToTypeID("channels"), 3);
         rawFormat.putBoolean(stringIDToTypeID("channelsInterleaved"), true);
         rawFormat.putInteger(stringIDToTypeID("depth"), 8);
 
-        let openAction = new ActionDescriptor();
+        var openAction = new ActionDescriptor();
         openAction.putPath(stringIDToTypeID("null"), file);
         openAction.putObject(stringIDToTypeID("as"), stringIDToTypeID("rawFormat"), rawFormat);
         executeAction(stringIDToTypeID("open"), openAction, DialogModes.NO);
@@ -132,12 +132,12 @@ RawPixels.prototype.create_layer = function () {
 
 $.hiresTimer;
 const p = new RawPixels(app.activeDocument);
-let sec = ($.hiresTimer / 1000 / 1000);
+var sec = ($.hiresTimer / 1000 / 1000);
 alert("Init RawPixels in " + sec.toFixed(2) + " seconds");
 
 alert("Pixel 0 =\n\n" + p.get(0));
-let a = new Array();
-for (let i = 0; i < 100; i++) a.push(p.get(i));
+var a = new Array();
+for (var i = 0; i < 100; i++) a.push(p.get(i));
 alert("Pixel 0-99 = \n\n" + a.toSource());
 
 p.set(0, [1, 200, 3]);
@@ -145,7 +145,7 @@ alert("New Pixel 0=\n\n" + p.get(0));
 
 $.hiresTimer;
 var n = p.width * p.height;
-for (let i = 0; i < n; i++) p.get(i);
+for (var i = 0; i < n; i++) p.get(i);
 sec = ($.hiresTimer / 1000 / 1000);
 
 alert("Processed get " + (n / 1000 / 1000) + " megapixels in " + sec.toFixed(2) + " seconds.");
@@ -153,7 +153,7 @@ alert("Processed get " + (n / 1000 / 1000) + " megapixels in " + sec.toFixed(2) 
 $.hiresTimer;
 
 n = 10;
-for (var i = 0; i < n; i++) p.set(1 + i * 2, [255, i * 20, i * 10]);
+for (var i = 0; i < n; i++) p.set([255, i * 20, i * 10], 1 + i * 2);
 sec = ($.hiresTimer / 1000 / 1000);
 alert("Processed set " + n + " pixels in " + sec.toFixed(2) + " seconds");
 
