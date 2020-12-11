@@ -149,6 +149,7 @@ var n = p.width * p.height;
 for (var i = 0; i < n; i++) p.get(i);
 sec = ($.hiresTimer / 1000 / 1000);
 alert("Got " + (n / 1000 / 1000) + " megapixels in " + sec.toFixed(2) + " seconds.");
+// I get 14 seconds per megapixel.
 
 $.hiresTimer;
 n = 10;
