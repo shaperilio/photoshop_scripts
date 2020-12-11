@@ -118,9 +118,11 @@ RawPixels.prototype.create_layer = function () {
         // The new active document is the file we just opened. Duplicate its contents into 
         // a new layer in our desired document, then close this temporary file.
         app.activeDocument.activeLayer.duplicate(this.doc.layers[0], ElementPlacement.PLACEBEFORE);
+        const tempDoc = app.activeDocument;
+        app.activeDocument = this.doc;
         this.doc.layers[0].name = "Pixels";
+        app.activeDocument = tempDoc;
         app.activeDocument.close(SaveOptions.DONOTSAVECHANGES);
-
         app.activeDocument = this.doc;
     }
     catch (e) { alert(e); }
@@ -147,15 +149,13 @@ $.hiresTimer;
 var n = p.width * p.height;
 for (var i = 0; i < n; i++) p.get(i);
 sec = ($.hiresTimer / 1000 / 1000);
-
-alert("Processed get " + (n / 1000 / 1000) + " megapixels in " + sec.toFixed(2) + " seconds.");
+alert("Got " + (n / 1000 / 1000) + " megapixels in " + sec.toFixed(2) + " seconds.");
 
 $.hiresTimer;
-
 n = 10;
 for (var i = 0; i < n; i++) p.set([255, i * 20, i * 10], 1 + i * 2);
 sec = ($.hiresTimer / 1000 / 1000);
-alert("Processed set " + n + " pixels in " + sec.toFixed(2) + " seconds");
+//alert("Set " + n + " pixels in " + sec.toFixed(2) + " seconds");
 
 p.create_layer();
 alert("New layer created  with new pixels");
