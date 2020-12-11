@@ -8,7 +8,6 @@
 // Only works on RGB 8bpp images, but this could be easily extended to support others.
 function RawPixels(doc) {
     this.doc = doc;
-    this.pixels = null;
 
     const currentActiveDoc = app.activeDocument;
 
